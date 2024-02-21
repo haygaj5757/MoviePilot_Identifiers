@@ -1,0 +1,21 @@
+name: Auto Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Merge PR
+        if: github.actor in env.MAINTAINERS
+        run: |
+          git config --global user.name 'Your Name'
+          git config --global user.email 'you@example.com'
+          git checkout ${{ github.event.pull_request.head.ref }}
+          git merge --no-ff ${{ github.event.pull_request.base.ref }}
+          git push origin ${{ github.event.pull_request.head.ref }}
